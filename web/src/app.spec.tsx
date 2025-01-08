@@ -1,3 +1,7 @@
+import App from './App'
+
 describe('test', () => {
-  it('should work', () => {})
+  it('should work', () => {
+    render(<App />)
+  })
 })
