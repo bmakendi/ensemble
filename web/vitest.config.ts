@@ -6,4 +6,11 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './setup.ts',
   },
+  build: {
+    rollupOptions: {
+      output: {
+        format: 'esm',
+      },
+    },
+  },
 })
