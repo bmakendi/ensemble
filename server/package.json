@@ -12,6 +12,8 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1"
   }
 }
-
