@@ -1,4 +1,6 @@
 import { Server } from 'socket.io'
+import { roleManager } from 'src/domain/application/role-app'
+import type { User } from 'src/domain/models/user'
 
 const io = new Server(3000, {
   cors: { origin: '*' },
@@ -17,6 +19,11 @@ io.on('connection', (socket) => {
       text: 'Server received your message!',
       originalData: data,
     })
+  })
+
+  socket.on('create-user', (data: User) => {
+    console.log('Received user:', data)
+    socket.emit('user-created', roleManager().assign(data.name, data.role))
   })
 
   // Handle disconnection

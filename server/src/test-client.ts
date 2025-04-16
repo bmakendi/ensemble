@@ -10,6 +10,10 @@ socket.on('connect', () => {
 
   // Send a test message
   socket.emit('test-message', { text: 'Hello from test client!' })
+
+  // Create a new attendee
+  socket.emit('create-user', { name: 'Bryan' })
+  socket.emit('create-user', { name: 'Souami', role: 'driver' })
 })
 
 socket.on('disconnect', () => {
