@@ -1,5 +1,14 @@
 import { io } from 'socket.io-client'
 
+type Role = 'navigator' | 'driver' | string
+type Participant = {
+  name: string
+  role: Role
+}
+type MobSession = {
+  participants: Array<Participant>
+}
+
 const socket = io('http://localhost:3000', {
   transports: ['websocket'],
 })
@@ -14,6 +23,10 @@ socket.on('connect', () => {
   // Create a new attendee
   socket.emit('create-user', { name: 'Bryan' })
   socket.emit('create-user', { name: 'Souami', role: 'driver' })
+})
+
+socket.on('session_state', (session: MobSession) => {
+  console.log('session en cours: ', session)
 })
 
 socket.on('disconnect', () => {

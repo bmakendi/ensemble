@@ -2,6 +2,15 @@ import { Server } from 'socket.io'
 import { roleManager } from 'src/domain/application/role-app'
 import type { User } from 'src/domain/models/user'
 
+type Role = 'navigator' | 'driver' | string
+type Participant = {
+  name: string
+  role: Role
+}
+type MobSession = {
+  participants: Array<Participant>
+}
+
 const io = new Server(3000, {
   cors: { origin: '*' },
   transports: ['websocket'],
@@ -12,6 +21,19 @@ console.log('Server running on port 3000!')
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id)
 
+  const currentSession: MobSession = {
+    participants: [
+      {
+        name: 'Bob',
+        role: 'navigator',
+      },
+      {
+        name: 'John',
+        role: 'driver',
+      },
+    ],
+  }
+  socket.emit('session-state', currentSession)
   // Respond to test messages
   socket.on('test-message', (data: unknown) => {
     console.log('Received test message:', data)
