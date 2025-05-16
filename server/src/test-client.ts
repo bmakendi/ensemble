@@ -25,7 +25,7 @@ socket.on('connect', () => {
   socket.emit('create-user', { name: 'Souami', role: 'driver' })
 })
 
-socket.on('session_state', (session: MobSession) => {
+socket.on('session-state', (session: MobSession) => {
   console.log('session en cours: ', session)
 })
 

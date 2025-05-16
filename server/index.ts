@@ -10,6 +10,15 @@ type Participant = {
 type MobSession = {
   participants: Array<Participant>
 }
+type User = {
+  name: string
+  role: Role
+}
+
+const createUser = ({name, role}: {name: string, role?: string}) => {
+  if (role) return {name, role}
+  return {name, role: 'participant'}
+}
 
 const io = new Server(3000, {
   cors: { origin: '*' },
@@ -45,7 +54,7 @@ io.on('connection', (socket) => {
 
   socket.on('create-user', (data: User) => {
     console.log('Received user:', data)
-    socket.emit('user-created', roleManager().assign(data.name, data.role))
+    socket.emit('user-created', createUser(data))
   })
 
   // Handle disconnection
