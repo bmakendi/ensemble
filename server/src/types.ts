@@ -13,7 +13,7 @@ export type TimerInfo = {
 
 export type MobSession = {
   participants: Array<Participant>
-  timer?: TimerInfo
+  timer: TimerInfo
 }
 
 export type User = {
@@ -31,3 +31,11 @@ export type Timer = {
   getState: () => TimerState
 }
 
+export type StartTimerPayload = {
+  durationInSeconds: number
+}
+
+export type CreateUserPayload = {
+  name: string
+  role?: Role
+}

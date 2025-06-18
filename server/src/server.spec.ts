@@ -13,7 +13,7 @@ describe('Server Timer Integration', () => {
     clientSocket = Client('http://localhost:3001', {
       transports: ['websocket'],
     })
-    
+
     await new Promise<void>((resolve) => {
       clientSocket.on('connect', () => resolve())
     })
@@ -108,3 +108,4 @@ describe('Server Timer Integration', () => {
     ])
   }, 10000)
 })
+

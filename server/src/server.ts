@@ -1,19 +1,32 @@
 import { Server } from 'socket.io'
-import type { MobSession, User, TimerInfo, Participant, Timer } from './types.js'
+import type {
+  MobSession,
+  User,
+  TimerInfo,
+  Participant,
+  Timer,
+  Role,
+  StartTimerPayload,
+  CreateUserPayload,
+} from './types.js'
 import { createTimer } from './timer.js'
 
-const createUser = ({ name, role }: { name: string; role?: string }): User => {
-  if (role) return { name, role: role as User['role'] }
+const createUser = (name: string, role?: Role): User => {
+  if (role) return { name, role }
   return { name, role: 'participant' }
 }
 
 const rotateRoles = (participants: Array<Participant>): Array<Participant> => {
   if (participants.length < 2) return participants
 
-  const navigator = participants.find((p) => p.role === 'navigator')
-  const driver = participants.find((p) => p.role === 'driver')
+  const navigator = participants.find(
+    (participant) => participant.role === 'navigator',
+  )
+  const driver = participants.find(
+    (participant) => participant.role === 'driver',
+  )
   const otherParticipants = participants.filter(
-    (p) => p.role === 'participant'
+    (participant) => participant.role === 'participant',
   )
 
   const newParticipants: Array<Participant> = []
@@ -51,6 +64,10 @@ export const createMobServer = (port: number): Server => {
         role: 'driver',
       },
     ],
+    timer: {
+      state: 'stopped',
+      durationInSeconds: 0,
+    },
   }
 
   let currentTimer: Timer | null = null
@@ -68,20 +85,23 @@ export const createMobServer = (port: number): Server => {
       })
     })
 
-    socket.on('create-user', (data: User) => {
+    socket.on('create-user', (data: CreateUserPayload) => {
       console.log('Received user:', data)
-      socket.emit('user-created', createUser(data))
+      socket.emit('user-created', createUser(data.name, data.role))
     })
 
-    socket.on('start-timer', (data: { durationInSeconds: number }) => {
+    socket.on('start-timer', (data: StartTimerPayload) => {
       currentTimer = createTimer(data.durationInSeconds, () => {
         currentSession.participants = rotateRoles(currentSession.participants)
-        currentSession.timer = undefined
+        currentSession.timer = {
+          state: 'stopped',
+          durationInSeconds: 0,
+        }
         io.emit('roles-rotated', currentSession)
       })
-      
+
       currentTimer.start()
-      
+
       const timerInfo: TimerInfo = {
         state: 'running',
         durationInSeconds: data.durationInSeconds,
@@ -92,7 +112,7 @@ export const createMobServer = (port: number): Server => {
     })
 
     socket.on('pause-timer', () => {
-      if (currentTimer && currentSession.timer) {
+      if (currentTimer) {
         currentTimer.pause()
         currentSession.timer.state = 'paused'
         io.emit('timer-paused', currentSession.timer)
@@ -100,7 +120,7 @@ export const createMobServer = (port: number): Server => {
     })
 
     socket.on('reset-timer', () => {
-      if (currentTimer && currentSession.timer) {
+      if (currentTimer) {
         currentTimer.reset()
         currentSession.timer.state = 'stopped'
         currentSession.timer.startedAtTimestamp = undefined

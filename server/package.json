@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "tsx --watch index.ts",
-    "build": "tsc",
+    "typecheck": "tsc",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -8,43 +8,48 @@ export const createTimer = (
   let currentTime = duration
   let intervalId: NodeJS.Timeout | null = null
 
+  const clearCurrentInterval = (): void => {
+    if (intervalId) {
+      clearInterval(intervalId)
+      intervalId = null
+    }
+  }
+
+  const handleTimerCompletion = (): void => {
+    state = 'stopped'
+    clearCurrentInterval()
+    if (onComplete) {
+      onComplete()
+    }
+  }
+
+  const handleTimerTick = (): void => {
+    if (state !== 'running') return
+    if (currentTime <= 0) return
+
+    currentTime--
+
+    if (currentTime === 0) {
+      handleTimerCompletion()
+    }
+  }
+
   return {
     start: () => {
       state = 'running'
-      if (intervalId) clearInterval(intervalId)
-      intervalId = setInterval(() => {
-        if (state === 'running' && currentTime > 0) {
-          currentTime--
-          if (currentTime === 0) {
-            state = 'stopped'
-            if (intervalId) {
-              clearInterval(intervalId)
-              intervalId = null
-            }
-            if (onComplete) {
-              onComplete()
-            }
-          }
-        }
-      }, 1000)
+      clearCurrentInterval()
+      intervalId = setInterval(handleTimerTick, 1000)
     },
     pause: () => {
       state = 'paused'
-      if (intervalId) {
-        clearInterval(intervalId)
-        intervalId = null
-      }
+      clearCurrentInterval()
     },
     reset: () => {
       state = 'stopped'
       currentTime = duration
-      if (intervalId) {
-        clearInterval(intervalId)
-        intervalId = null
-      }
+      clearCurrentInterval()
     },
     getCurrentTime: () => currentTime,
     getState: () => state,
   }
 }
-
