@@ -5,8 +5,15 @@ export type Participant = {
   role: Role
 }
 
+export type TimerInfo = {
+  state: TimerState
+  durationInSeconds: number
+  startedAtTimestamp?: number
+}
+
 export type MobSession = {
   participants: Array<Participant>
+  timer?: TimerInfo
 }
 
 export type User = {
