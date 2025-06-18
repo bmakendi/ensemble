@@ -87,5 +87,51 @@ The project will evolve to use **Domain Driven Design** and **SOLID principles**
 - **Hexagonal Architecture**: Used within each vertical slice for maximum flexibility
 - Each domain will have its own bounded context with domain and infrastructure layers
 
+## Coding Standards
+
+### Type System Guidelines
+- **Use `type` keyword** for domain models and entities (User, Participant, TimerState, MobSession)
+- **Use `interface` keyword** for ports and contracts in hexagonal architecture
+- **Everything must be typed** - Type safety is paramount to avoid primitive obsession
+- **No `any` or `unknown`** - Be explicit with all types
+
+### Code Style
+- **No comments** - Code should be self-documenting through explicit variable and function names
+- **Functional approach** - Use factory functions with arrow function syntax: `const createTimer = () => {}`
+- **Return objects with arrow functions**: `return { start: () => {}, pause: () => {} }`
+- **Explicit naming** - Functions and variables should clearly express their intent
+- **Always specify return types** - All functions must have explicit return type annotations for type safety
+
+### Examples
+```typescript
+// Good - explicit types, names, and return types
+type TimerState = 'stopped' | 'running' | 'paused'
+type Timer = {
+  startCountdown: () => void
+  getCurrentTimeInSeconds: () => number
+  getState: () => TimerState
+}
+
+const createTimerWithDuration = (durationInSeconds: number): Timer => {
+  const timerState: TimerState = 'stopped'
+  return {
+    startCountdown: (): void => { /* implementation */ },
+    getCurrentTimeInSeconds: (): number => currentTime,
+    getState: (): TimerState => timerState
+  }
+}
+
+// Bad - primitive obsession, unclear names, no return types
+const create = (d: number) => {
+  let s = 'stopped'  // unclear what 's' represents
+  return { start: () => {}, get: () => s }
+}
+```
+
+### Current Implementation
+- **Timer Domain**: Fully implemented with TDD, functional approach, and complete type safety
+- **7 comprehensive tests** covering all timer functionality
+- **Factory function**: `createTimer(duration, onComplete?)` with closure-based state management
+
 ### Development Workflow
 Both server and web applications can run independently. Start the server first for full functionality, then start the web client. The server includes a test client (`server/src/test-client.ts`) for testing Socket.IO communication.
