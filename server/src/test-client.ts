@@ -1,13 +1,5 @@
 import { io } from 'socket.io-client'
-
-type Role = 'navigator' | 'driver' | string
-type Participant = {
-  name: string
-  role: Role
-}
-type MobSession = {
-  participants: Array<Participant>
-}
+import type { MobSession } from './types.js'
 
 const socket = io('http://localhost:3000', {
   transports: ['websocket'],

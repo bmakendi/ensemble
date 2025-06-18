@@ -1,23 +1,9 @@
 import { Server } from 'socket.io'
-import { roleManager } from 'src/domain/application/role-app'
-import type { User } from 'src/domain/models/user'
+import type { MobSession, User } from './src/types.js'
 
-type Role = 'navigator' | 'driver' | string
-type Participant = {
-  name: string
-  role: Role
-}
-type MobSession = {
-  participants: Array<Participant>
-}
-type User = {
-  name: string
-  role: Role
-}
-
-const createUser = ({name, role}: {name: string, role?: string}) => {
-  if (role) return {name, role}
-  return {name, role: 'participant'}
+const createUser = ({ name, role }: { name: string; role?: string }) => {
+  if (role) return { name, role }
+  return { name, role: 'participant' }
 }
 
 const io = new Server(3000, {
